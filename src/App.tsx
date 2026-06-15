@@ -9,10 +9,12 @@ import { CHROME_H, CHROME_W, UI_SCALE } from './constants';
 import { useWindowManager } from './windows/WindowManager';
 import { GameWindow } from './windows/GameWindow';
 import { FolderWindow } from './desktop/FolderWindow';
+import { InfoWindow } from './desktop/InfoWindow';
 import { Desktop } from './desktop/Desktop';
 import { Taskbar } from './desktop/Taskbar';
 
 const FOLDER_ID = 'folder';
+const INFO_ID = 'info';
 
 function Shell() {
   const manager = useWindowManager();
@@ -25,6 +27,10 @@ function Shell() {
 
   const openFolder = useCallback(() => {
     open({ id: FOLDER_ID, kind: 'folder', title: 'Old Games', icon: '/icons/folder.svg', w: 460, h: 320, x: 110, y: 70 });
+  }, [open]);
+
+  const openInfo = useCallback(() => {
+    open({ id: INFO_ID, kind: 'info', title: 'Read Me - Notepad', icon: '/icons/readme.svg', w: 540, h: 460, x: 150, y: 96 });
   }, [open]);
 
   const openGame = useCallback((game: Game) => {
@@ -78,15 +84,17 @@ function Shell() {
 
   return (
     <div style={{ position: 'fixed', inset: 0, overflow: 'hidden', zoom: UI_SCALE }}>
-      <Desktop onOpenFolder={openFolder} />
+      <Desktop onOpenFolder={openFolder} onOpenInfo={openInfo} />
       {windows.map((w) =>
         w.kind === 'folder' ? (
           <FolderWindow key={w.id} win={w} manager={manager} openGame={openGame} />
+        ) : w.kind === 'info' ? (
+          <InfoWindow key={w.id} win={w} manager={manager} />
         ) : (
           <GameWindow key={w.id} win={w} manager={manager} />
         ),
       )}
-      <Taskbar manager={manager} openGame={openGame} openFolder={openFolder} />
+      <Taskbar manager={manager} openGame={openGame} openFolder={openFolder} openInfo={openInfo} />
     </div>
   );
 }

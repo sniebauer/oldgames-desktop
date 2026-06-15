@@ -4,12 +4,13 @@
 import type { CSSProperties } from 'react';
 import { MenuList, MenuListItem, Separator } from 'react95';
 import { GAMES, type Game } from '../games';
-import { FolderIcon } from '../icons';
+import { FolderIcon, TextFileIcon } from '../icons';
 import { TASKBAR_H } from '../constants';
 
 interface Props {
   onOpenGame: (game: Game) => void;
   onOpenFolder: () => void;
+  onOpenInfo: () => void;
   onClose: () => void;
 }
 
@@ -26,7 +27,7 @@ const bannerStyle: CSSProperties = {
   letterSpacing: 1,
 };
 
-export function StartMenu({ onOpenGame, onOpenFolder, onClose }: Props) {
+export function StartMenu({ onOpenGame, onOpenFolder, onOpenInfo, onClose }: Props) {
   return (
     <MenuList
       style={{ position: 'absolute', left: 2, bottom: TASKBAR_H, zIndex: 9999, display: 'flex', padding: 0 }}
@@ -50,6 +51,10 @@ export function StartMenu({ onOpenGame, onOpenFolder, onClose }: Props) {
         <MenuListItem onClick={() => { onOpenFolder(); onClose(); }} style={{ justifyContent: 'flex-start', gap: 8 }}>
           <span style={{ display: 'inline-flex', width: 24, justifyContent: 'center' }}><FolderIcon size={22} /></span>
           Old Games Folder
+        </MenuListItem>
+        <MenuListItem onClick={() => { onOpenInfo(); onClose(); }} style={{ justifyContent: 'flex-start', gap: 8 }}>
+          <span style={{ display: 'inline-flex', width: 24, justifyContent: 'center' }}><TextFileIcon size={22} /></span>
+          Read Me
         </MenuListItem>
       </div>
     </MenuList>

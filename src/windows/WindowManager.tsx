@@ -6,7 +6,7 @@
 import { useCallback, useRef, useState, type PointerEvent as ReactPointerEvent } from 'react';
 import { MIN_H, MIN_W } from '../constants';
 
-export type WinKind = 'folder' | 'game';
+export type WinKind = 'folder' | 'game' | 'info';
 
 /** The eight directions a window can be resized from. */
 export type ResizeEdge = 'n' | 's' | 'e' | 'w' | 'ne' | 'nw' | 'se' | 'sw';

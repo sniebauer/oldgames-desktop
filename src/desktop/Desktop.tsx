@@ -1,11 +1,12 @@
-// The desktop background: teal wallpaper + desktop icons. The "Old Games" folder icon
-// (re)opens the folder window. Open windows render as siblings on top of this.
+// The desktop background: teal wallpaper + desktop icons. Double-clicking an
+// icon opens its window. Open windows render as siblings on top of this.
 
-import { useState, type CSSProperties } from 'react';
-import { FolderIcon } from '../icons';
+import { useState, type CSSProperties, type ReactNode } from 'react';
+import { FolderIcon, TextFileIcon } from '../icons';
 
 interface Props {
   onOpenFolder: () => void;
+  onOpenInfo: () => void;
 }
 
 const deskStyle: CSSProperties = {
@@ -15,37 +16,50 @@ const deskStyle: CSSProperties = {
   overflow: 'hidden',
 };
 
-export function Desktop({ onOpenFolder }: Props) {
-  const [selected, setSelected] = useState(false);
+export function Desktop({ onOpenFolder, onOpenInfo }: Props) {
+  const [selected, setSelected] = useState<string | null>(null);
   return (
-    <div style={deskStyle} onPointerDown={() => setSelected(false)}>
-      <DesktopIcon
-        label="Old Games"
-        selected={selected}
-        onSelect={() => setSelected(true)}
-        onOpen={onOpenFolder}
-      />
+    <div style={deskStyle} onPointerDown={() => setSelected(null)}>
+      <div style={{ position: 'absolute', left: 16, top: 16, display: 'flex', flexDirection: 'column', gap: 8 }}>
+        <DesktopIcon
+          id="folder"
+          label="Old Games"
+          selected={selected === 'folder'}
+          onSelect={() => setSelected('folder')}
+          onOpen={onOpenFolder}
+        >
+          <FolderIcon size={40} />
+        </DesktopIcon>
+        <DesktopIcon
+          id="info"
+          label="Read Me"
+          selected={selected === 'info'}
+          onSelect={() => setSelected('info')}
+          onOpen={onOpenInfo}
+        >
+          <TextFileIcon size={40} />
+        </DesktopIcon>
+      </div>
     </div>
   );
 }
 
 interface IconProps {
+  id: string;
   label: string;
   selected: boolean;
   onSelect: () => void;
   onOpen: () => void;
+  children: ReactNode;
 }
 
-function DesktopIcon({ label, selected, onSelect, onOpen }: IconProps) {
+function DesktopIcon({ label, selected, onSelect, onOpen, children }: IconProps) {
   return (
     <div
       role="button"
       onPointerDown={(e) => { e.stopPropagation(); onSelect(); }}
       onDoubleClick={onOpen}
       style={{
-        position: 'absolute',
-        left: 16,
-        top: 16,
         width: 80,
         padding: 6,
         display: 'flex',
@@ -55,7 +69,7 @@ function DesktopIcon({ label, selected, onSelect, onOpen }: IconProps) {
         cursor: 'default',
       }}
     >
-      <FolderIcon size={40} />
+      {children}
       <span
         style={{
           marginTop: 4,

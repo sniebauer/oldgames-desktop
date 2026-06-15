@@ -13,6 +13,7 @@ interface Props {
   manager: WindowManager;
   openGame: (game: Game) => void;
   openFolder: () => void;
+  openInfo: () => void;
 }
 
 function useClock(): string {
@@ -38,7 +39,7 @@ const taskBtnStyle = (active: boolean): CSSProperties => ({
   whiteSpace: 'nowrap',
 });
 
-export function Taskbar({ manager, openGame, openFolder }: Props) {
+export function Taskbar({ manager, openGame, openFolder, openInfo }: Props) {
   const [startOpen, setStartOpen] = useState(false);
   const clock = useClock();
 
@@ -58,6 +59,7 @@ export function Taskbar({ manager, openGame, openFolder }: Props) {
         <StartMenu
           onOpenGame={openGame}
           onOpenFolder={openFolder}
+          onOpenInfo={openInfo}
           onClose={() => setStartOpen(false)}
         />
       )}
