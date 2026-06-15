@@ -1,0 +1,28 @@
+{
+  "name": "oldgames-desktop",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "A Windows 95 desktop that hosts a collection of old Windows games.",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "deploy": "npm run build && npx wrangler pages deploy dist"
+  },
+  "dependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-router-dom": "^6.26.2",
+    "react95": "^4.0.0",
+    "styled-components": "^5.3.11"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.11",
+    "@types/react-dom": "^18.3.0",
+    "@types/styled-components": "^5.1.34",
+    "@vitejs/plugin-react": "^4.3.2",
+    "typescript": "^5.6.3",
+    "vite": "^5.4.10"
+  }
+}
