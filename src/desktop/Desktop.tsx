@@ -2,11 +2,12 @@
 // icon opens its window. Open windows render as siblings on top of this.
 
 import { useState, type CSSProperties, type ReactNode } from 'react';
-import { FolderIcon, TextFileIcon } from '../icons';
+import { FolderIcon, RecycleBinIcon, TextFileIcon } from '../icons';
 
 interface Props {
   onOpenFolder: () => void;
   onOpenInfo: () => void;
+  onOpenAbandonware: () => void;
 }
 
 const deskStyle: CSSProperties = {
@@ -16,7 +17,7 @@ const deskStyle: CSSProperties = {
   overflow: 'hidden',
 };
 
-export function Desktop({ onOpenFolder, onOpenInfo }: Props) {
+export function Desktop({ onOpenFolder, onOpenInfo, onOpenAbandonware }: Props) {
   const [selected, setSelected] = useState<string | null>(null);
   return (
     <div style={deskStyle} onPointerDown={() => setSelected(null)}>
@@ -38,6 +39,15 @@ export function Desktop({ onOpenFolder, onOpenInfo }: Props) {
           onOpen={onOpenInfo}
         >
           <TextFileIcon size={40} />
+        </DesktopIcon>
+        <DesktopIcon
+          id="abandonware"
+          label="abandonware.online"
+          selected={selected === 'abandonware'}
+          onSelect={() => setSelected('abandonware')}
+          onOpen={onOpenAbandonware}
+        >
+          <RecycleBinIcon size={40} />
         </DesktopIcon>
       </div>
     </div>

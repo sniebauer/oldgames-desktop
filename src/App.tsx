@@ -84,7 +84,11 @@ function Shell() {
 
   return (
     <div style={{ position: 'fixed', inset: 0, overflow: 'hidden', zoom: UI_SCALE }}>
-      <Desktop onOpenFolder={openFolder} onOpenInfo={openInfo} />
+      <Desktop
+        onOpenFolder={openFolder}
+        onOpenInfo={openInfo}
+        onOpenAbandonware={() => window.open('https://abandonware.online', '_blank', 'noopener')}
+      />
       {windows.map((w) =>
         w.kind === 'folder' ? (
           <FolderWindow key={w.id} win={w} manager={manager} openGame={openGame} />
