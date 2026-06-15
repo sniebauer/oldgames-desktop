@@ -29,6 +29,19 @@ const GlobalStyles = createGlobalStyle`
   button, input, select, textarea {
     font-family: inherit;
   }
+  /* Authentic Windows 95 cursors: the white arrow by default (cursor is an
+     inherited property, so it propagates), the pointing hand on anything
+     clickable, and the text I-beam in editable fields. */
+  html, body {
+    cursor: url('/cursors/arrow.png') 2 2, auto;
+  }
+  a, button, [role='button'], [role='menuitem'], li {
+    /* !important to beat react95's own \`cursor: pointer\` class. */
+    cursor: url('/cursors/pointer.png') 9 2, pointer !important;
+  }
+  input, textarea {
+    cursor: text;
+  }
 `;
 
 createRoot(document.getElementById('root')!).render(
