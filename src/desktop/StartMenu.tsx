@@ -13,8 +13,6 @@ interface Props {
   onClose: () => void;
 }
 
-const SHELL_REPO = 'https://github.com/sniebauer/oldgames-desktop';
-
 const bannerStyle: CSSProperties = {
   width: 28,
   background: 'linear-gradient(#000080, #1084d0)',
@@ -52,13 +50,6 @@ export function StartMenu({ onOpenGame, onOpenFolder, onClose }: Props) {
         <MenuListItem onClick={() => { onOpenFolder(); onClose(); }} style={{ justifyContent: 'flex-start', gap: 8 }}>
           <span style={{ display: 'inline-flex', width: 24, justifyContent: 'center' }}><FolderIcon size={22} /></span>
           Old Games Folder
-        </MenuListItem>
-        <MenuListItem
-          onClick={() => { window.open(SHELL_REPO, '_blank', 'noopener'); onClose(); }}
-          style={{ justifyContent: 'flex-start', gap: 8 }}
-        >
-          <span style={{ display: 'inline-flex', width: 24, justifyContent: 'center' }}>{'</>'}</span>
-          View Source on GitHub
         </MenuListItem>
       </div>
     </MenuList>
