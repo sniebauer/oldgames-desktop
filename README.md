@@ -21,8 +21,22 @@ URLs.
 
 ```sh
 npm run build   # typecheck + production build to dist/
-npm run deploy  # build + wrangler pages deploy (Cloudflare Pages)
 ```
+
+## Deploy
+
+This repo is connected to a **Cloudflare Pages** project via Git integration:
+pushing to `main` triggers an automatic production build & deploy, and every
+other branch / PR gets a preview URL. Cloudflare build settings:
+
+| Setting                | Value           |
+| ---------------------- | --------------- |
+| Build command          | `npm run build` |
+| Build output directory | `dist`          |
+| Node version           | `20` (`.nvmrc`) |
+
+`npm run deploy` still exists as a manual `wrangler pages deploy` fallback, but
+day to day you just push.
 
 ## Structure
 
