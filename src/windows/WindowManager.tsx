@@ -4,8 +4,12 @@
 // opening an already-open game just focuses it.
 
 import { useCallback, useRef, useState, type PointerEvent as ReactPointerEvent } from 'react';
+import { MIN_H, MIN_W } from '../constants';
 
 export type WinKind = 'folder' | 'game';
+
+/** The eight directions a window can be resized from. */
+export type ResizeEdge = 'n' | 's' | 'e' | 'w' | 'ne' | 'nw' | 'se' | 'sw';
 
 export interface WinState {
   id: string;
@@ -15,7 +19,12 @@ export interface WinState {
   icon?: string;
   x: number;
   y: number;
-  width: number;
+  /** Outer window (frame) size, including the Win95 chrome. */
+  w: number;
+  h: number;
+  /** Smallest this window may be resized to. */
+  minW: number;
+  minH: number;
   z: number;
   minimized: boolean;
   maximized: boolean;
@@ -27,7 +36,10 @@ export interface OpenOpts {
   gameId?: string;
   title: string;
   icon?: string;
-  width: number;
+  w: number;
+  h: number;
+  minW?: number;
+  minH?: number;
   x?: number;
   y?: number;
 }
@@ -44,6 +56,7 @@ export interface WindowManager {
   toggleMaximize: (id: string) => void;
   setTitle: (id: string, title: string) => void;
   startDrag: (id: string, e: ReactPointerEvent) => void;
+  startResize: (id: string, edge: ResizeEdge, e: ReactPointerEvent) => void;
 }
 
 export function useWindowManager(): WindowManager {
@@ -81,7 +94,10 @@ export function useWindowManager(): WindowManager {
         icon: opts.icon,
         x: opts.x ?? 96 + c * 26,
         y: opts.y ?? 60 + c * 26,
-        width: opts.width,
+        w: opts.w,
+        h: opts.h,
+        minW: opts.minW ?? MIN_W,
+        minH: opts.minH ?? MIN_H,
         z,
         minimized: false,
         maximized: false,
@@ -138,6 +154,40 @@ export function useWindowManager(): WindowManager {
     window.addEventListener('pointerup', onUp);
   }, [focus, update]);
 
+  const startResize = useCallback((id: string, edge: ResizeEdge, e: ReactPointerEvent) => {
+    const win = ref.current.find((w) => w.id === id);
+    if (!win || win.maximized) return;
+    e.stopPropagation();
+    focus(id);
+    const start = { x: win.x, y: win.y, w: win.w, h: win.h, mx: e.clientX, my: e.clientY };
+    const { minW, minH } = win;
+    setDragging(true);
+    document.body.style.cursor = `${edge}-resize`;
+
+    const onMove = (ev: PointerEvent) => {
+      const dx = ev.clientX - start.mx;
+      const dy = ev.clientY - start.my;
+      let { x, y, w, h } = start;
+      if (edge.includes('e')) w = start.w + dx;
+      if (edge.includes('s')) h = start.h + dy;
+      if (edge.includes('w')) { w = start.w - dx; x = start.x + dx; }
+      if (edge.includes('n')) { h = start.h - dy; y = start.y + dy; }
+      // Clamp to the minimum size, anchoring the opposite edge so a west/north
+      // drag stops growing the window once it hits the minimum.
+      if (w < minW) { if (edge.includes('w')) x = start.x + (start.w - minW); w = minW; }
+      if (h < minH) { if (edge.includes('n')) y = start.y + (start.h - minH); h = minH; }
+      update(id, { x: Math.max(0, x), y: Math.max(0, y), w, h });
+    };
+    const onUp = () => {
+      setDragging(false);
+      document.body.style.cursor = '';
+      window.removeEventListener('pointermove', onMove);
+      window.removeEventListener('pointerup', onUp);
+    };
+    window.addEventListener('pointermove', onMove);
+    window.addEventListener('pointerup', onUp);
+  }, [focus, update]);
+
   return {
     windows,
     dragging,
@@ -150,5 +200,6 @@ export function useWindowManager(): WindowManager {
     toggleMaximize,
     setTitle,
     startDrag,
+    startResize,
   };
 }

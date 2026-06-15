@@ -5,6 +5,7 @@
 import { useCallback, useEffect } from 'react';
 import { Routes, Route, useNavigate, useParams, useLocation } from 'react-router-dom';
 import { gameById, type Game } from './games';
+import { CHROME_H, CHROME_W } from './constants';
 import { useWindowManager } from './windows/WindowManager';
 import { GameWindow } from './windows/GameWindow';
 import { FolderWindow } from './desktop/FolderWindow';
@@ -23,11 +24,22 @@ function Shell() {
   const params = useParams<{ gameId: string }>();
 
   const openFolder = useCallback(() => {
-    open({ id: FOLDER_ID, kind: 'folder', title: 'Old Games', icon: '/icons/folder.svg', width: 460, x: 110, y: 70 });
+    open({ id: FOLDER_ID, kind: 'folder', title: 'Old Games', icon: '/icons/folder.svg', w: 460, h: 320, x: 110, y: 70 });
   }, [open]);
 
   const openGame = useCallback((game: Game) => {
-    open({ id: game.id, kind: 'game', gameId: game.id, title: game.title, icon: game.icon, width: game.width + 8 });
+    open({
+      id: game.id,
+      kind: 'game',
+      gameId: game.id,
+      title: game.title,
+      icon: game.icon,
+      w: game.width + CHROME_W,
+      h: game.height + CHROME_H,
+      // Keep the game from being resized below ~45% of native.
+      minW: Math.round(game.width * 0.45) + CHROME_W,
+      minH: Math.round(game.height * 0.45) + CHROME_H,
+    });
   }, [open]);
 
   // Open the folder once on load.

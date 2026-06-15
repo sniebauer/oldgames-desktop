@@ -14,8 +14,6 @@ interface Props {
   openGame: (game: Game) => void;
 }
 
-const FOLDER_W = 460;
-
 const menuBarStyle: CSSProperties = {
   display: 'flex',
   gap: 14,
@@ -61,7 +59,8 @@ export function FolderWindow({ win, manager, openGame }: Props) {
       x={win.x}
       y={win.y}
       z={win.z}
-      width={win.maximized ? 0 : FOLDER_W}
+      width={win.w}
+      height={win.h}
       active={manager.isTop(win.id)}
       maximized={win.maximized}
       minimized={win.minimized}
@@ -70,6 +69,8 @@ export function FolderWindow({ win, manager, openGame }: Props) {
       onMinimize={() => manager.minimize(win.id)}
       onMaximize={() => manager.toggleMaximize(win.id)}
       onDragStart={(e) => manager.startDrag(win.id, e)}
+      onResizeStart={(edge, e) => manager.startResize(win.id, edge, e)}
+      contentStyle={{ display: 'flex', flexDirection: 'column', padding: '2px 0 0' }}
     >
       <div style={menuBarStyle}>
         <span><u>F</u>ile</span>
