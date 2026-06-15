@@ -2,12 +2,15 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <link rel="icon" type="image/svg+xml" href="/icons/folder.svg" />
     <title>Old Games</title>
     <style>
       html, body, #root { margin: 0; padding: 0; height: 100%; }
-      body { overflow: hidden; }
+      /* Use the dynamic viewport on mobile so the taskbar isn't hidden behind
+         the browser's collapsing toolbar. */
+      #root { height: 100dvh; }
+      body { overflow: hidden; overscroll-behavior: none; }
     </style>
   </head>
   <body>

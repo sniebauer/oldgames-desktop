@@ -8,6 +8,7 @@ import type { WindowManager } from '../windows/WindowManager';
 import { StartMenu } from './StartMenu';
 import { FolderIcon } from '../icons';
 import { TASKBAR_H } from '../constants';
+import { useIsMobile } from '../useIsMobile';
 
 interface Props {
   manager: WindowManager;
@@ -29,8 +30,9 @@ function useClock(): string {
   return `${h}:${m} ${ampm}`;
 }
 
-const taskBtnStyle = (active: boolean): CSSProperties => ({
-  width: 160,
+const taskBtnStyle = (active: boolean, isMobile: boolean): CSSProperties => ({
+  // Fixed Win95 width on desktop; on mobile the buttons share the row.
+  ...(isMobile ? { flex: '1 1 0', minWidth: 0, maxWidth: 160 } : { width: 160 }),
   marginRight: 4,
   justifyContent: 'flex-start',
   gap: 6,
@@ -42,6 +44,7 @@ const taskBtnStyle = (active: boolean): CSSProperties => ({
 export function Taskbar({ manager, openGame, openFolder, openInfo }: Props) {
   const [startOpen, setStartOpen] = useState(false);
   const clock = useClock();
+  const isMobile = useIsMobile();
 
   // Close the Start menu on any outside click.
   useEffect(() => {
@@ -82,7 +85,7 @@ export function Taskbar({ manager, openGame, openFolder, openInfo }: Props) {
                   key={w.id}
                   active={manager.isTop(w.id) && !w.minimized}
                   onClick={() => manager.toggleMinimize(w.id)}
-                  style={taskBtnStyle(manager.isTop(w.id) && !w.minimized)}
+                  style={taskBtnStyle(manager.isTop(w.id) && !w.minimized, isMobile)}
                 >
                   {w.icon ? (
                     <img src={w.icon} alt="" width={16} height={16} style={{ imageRendering: 'pixelated' }} />
@@ -94,12 +97,14 @@ export function Taskbar({ manager, openGame, openFolder, openInfo }: Props) {
               ))}
             </div>
           </div>
-          <Frame
-            variant="well"
-            style={{ height: 26, display: 'flex', alignItems: 'center', padding: '0 8px', flexShrink: 0, fontSize: 13 }}
-          >
-            {clock}
-          </Frame>
+          {!isMobile && (
+            <Frame
+              variant="well"
+              style={{ height: 26, display: 'flex', alignItems: 'center', padding: '0 8px', flexShrink: 0, fontSize: 13 }}
+            >
+              {clock}
+            </Frame>
+          )}
         </Toolbar>
       </AppBar>
     </>

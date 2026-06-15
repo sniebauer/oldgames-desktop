@@ -5,6 +5,7 @@
 import { useState, type CSSProperties, type MouseEvent } from 'react';
 import { MenuList, MenuListItem, Separator } from 'react95';
 import { GAMES, type Game } from '../games';
+import { useIsMobile } from '../useIsMobile';
 import type { WindowManager, WinState } from '../windows/WindowManager';
 import { Window95 } from '../windows/Window95';
 
@@ -125,6 +126,7 @@ interface ItemProps {
 }
 
 function FolderItem({ game, selected, onSelect, onOpen, onContext }: ItemProps) {
+  const isMobile = useIsMobile();
   const labelStyle: CSSProperties = selected
     ? { background: '#000080', color: '#fff', outline: '1px dotted #fff' }
     : { color: '#000' };
@@ -133,6 +135,7 @@ function FolderItem({ game, selected, onSelect, onOpen, onContext }: ItemProps) 
       role="button"
       title={game.title}
       onPointerDown={(e) => { e.stopPropagation(); onSelect(); }}
+      onClick={isMobile ? onOpen : undefined}
       onDoubleClick={onOpen}
       onContextMenu={onContext}
       style={{

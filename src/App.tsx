@@ -6,6 +6,7 @@ import { useCallback, useEffect } from 'react';
 import { Routes, Route, useNavigate, useParams, useLocation } from 'react-router-dom';
 import { gameById, type Game } from './games';
 import { CHROME_H, CHROME_W, UI_SCALE } from './constants';
+import { useIsMobile } from './useIsMobile';
 import { useWindowManager } from './windows/WindowManager';
 import { GameWindow } from './windows/GameWindow';
 import { FolderWindow } from './desktop/FolderWindow';
@@ -18,6 +19,7 @@ const INFO_ID = 'info';
 
 function Shell() {
   const manager = useWindowManager();
+  const isMobile = useIsMobile();
   // The manager object is recreated each render, but its methods are stable
   // (useCallback). Depend on the methods — never the manager — to avoid loops.
   const { open, focus, windows } = manager;
@@ -48,8 +50,9 @@ function Shell() {
     });
   }, [open]);
 
-  // Open the folder once on load.
-  useEffect(() => { openFolder(); }, [openFolder]);
+  // Open the folder once on load — but not on mobile, where it would fill the
+  // screen and hide the desktop; there we let the user tap an icon first.
+  useEffect(() => { if (!isMobile) openFolder(); }, [openFolder, isMobile]);
 
   // Deep link: opening or changing the /:gameId route opens (or focuses) that
   // game. Keyed on the route id only — NOT the window list — so closing a window
@@ -83,7 +86,7 @@ function Shell() {
   }, [focus]);
 
   return (
-    <div style={{ position: 'fixed', inset: 0, overflow: 'hidden', zoom: UI_SCALE }}>
+    <div style={{ position: 'fixed', inset: 0, overflow: 'hidden', zoom: isMobile ? 1 : UI_SCALE }}>
       <Desktop
         onOpenFolder={openFolder}
         onOpenInfo={openInfo}

@@ -7,6 +7,7 @@
 import type { CSSProperties, PointerEvent as ReactPointerEvent, ReactNode } from 'react';
 import { Window } from 'react95';
 import { CAPTION_H, FRAME_PAD, TASKBAR_H } from '../constants';
+import { useIsMobile } from '../useIsMobile';
 import type { ResizeEdge } from './WindowManager';
 import { CloseGlyph, MaximizeGlyph, MinimizeGlyph, RestoreGlyph } from './captionGlyphs';
 
@@ -109,7 +110,10 @@ const edgeHandles: { edge: ResizeEdge; style: CSSProperties }[] = [
 ];
 
 export function Window95(props: Props) {
-  const { maximized } = props;
+  const isMobile = useIsMobile();
+  // On phones every window fills the screen and can't be dragged or resized;
+  // you switch between them from the taskbar.
+  const fullScreen = props.maximized || isMobile;
   const base: CSSProperties = {
     position: 'absolute',
     display: props.minimized ? 'none' : 'flex',
@@ -117,7 +121,7 @@ export function Window95(props: Props) {
     padding: FRAME_PAD,
     zIndex: props.z,
   };
-  const frameStyle: CSSProperties = maximized
+  const frameStyle: CSSProperties = fullScreen
     ? { ...base, left: 0, top: 0, width: '100%', height: `calc(100% - ${TASKBAR_H}px)` }
     : { ...base, left: props.x, top: props.y, width: props.width, height: props.height };
 
@@ -125,8 +129,8 @@ export function Window95(props: Props) {
     <Window style={frameStyle} onPointerDown={props.onFocus}>
       <div
         style={captionStyle(props.active)}
-        onPointerDown={props.onDragStart}
-        onDoubleClick={props.onMaximize}
+        onPointerDown={isMobile ? undefined : props.onDragStart}
+        onDoubleClick={isMobile ? undefined : props.onMaximize}
       >
         <span style={{ display: 'flex', alignItems: 'center', overflow: 'hidden', whiteSpace: 'nowrap', flex: 1 }}>
           {props.icon && (
@@ -147,9 +151,12 @@ export function Window95(props: Props) {
           <CaptionButton onClick={props.onMinimize} title="Minimize">
             <MinimizeGlyph />
           </CaptionButton>
-          <CaptionButton onClick={props.onMaximize} title={maximized ? 'Restore' : 'Maximize'}>
-            {maximized ? <RestoreGlyph /> : <MaximizeGlyph />}
-          </CaptionButton>
+          {/* Maximize/restore is meaningless when windows are already full-screen. */}
+          {!isMobile && (
+            <CaptionButton onClick={props.onMaximize} title={props.maximized ? 'Restore' : 'Maximize'}>
+              {props.maximized ? <RestoreGlyph /> : <MaximizeGlyph />}
+            </CaptionButton>
+          )}
           {/* A 2px gap before Close, exactly like Win95. */}
           <CaptionButton onClick={props.onClose} title="Close" marginLeft={2}>
             <CloseGlyph />
@@ -159,7 +166,7 @@ export function Window95(props: Props) {
 
       <div style={{ flex: '1 1 auto', minHeight: 0, marginTop: 1, ...props.contentStyle }}>{props.children}</div>
 
-      {!maximized &&
+      {!fullScreen &&
         edgeHandles.map(({ edge, style }) => (
           <div
             key={edge}

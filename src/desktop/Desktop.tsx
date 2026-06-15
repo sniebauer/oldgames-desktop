@@ -3,6 +3,7 @@
 
 import { useState, type CSSProperties, type ReactNode } from 'react';
 import { FolderIcon, RecycleBinIcon, TextFileIcon } from '../icons';
+import { useIsMobile } from '../useIsMobile';
 
 interface Props {
   onOpenFolder: () => void;
@@ -64,10 +65,12 @@ interface IconProps {
 }
 
 function DesktopIcon({ label, selected, onSelect, onOpen, children }: IconProps) {
+  const isMobile = useIsMobile();
   return (
     <div
       role="button"
       onPointerDown={(e) => { e.stopPropagation(); onSelect(); }}
+      onClick={isMobile ? onOpen : undefined}
       onDoubleClick={onOpen}
       style={{
         width: 80,
