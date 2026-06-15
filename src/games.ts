@@ -24,6 +24,15 @@ export const GAMES: Game[] = [
     width: 518,
     height: 376,
   },
+  {
+    id: 'sink-sub',
+    title: 'SinkSub',
+    icon: '/icons/sink-sub.png',
+    src: DEV ? 'http://localhost:5180/' : 'https://sink-sub-web.pages.dev/',
+    repoUrl: 'https://github.com/sniebauer/sink-sub-web',
+    width: 640,
+    height: 476,
+  },
 ];
 
 export const gameById = (id: string): Game | undefined => GAMES.find((g) => g.id === id);
