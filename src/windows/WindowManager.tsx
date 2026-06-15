@@ -4,7 +4,7 @@
 // opening an already-open game just focuses it.
 
 import { useCallback, useRef, useState, type PointerEvent as ReactPointerEvent } from 'react';
-import { MIN_H, MIN_W } from '../constants';
+import { CHROME_H, CHROME_W, MIN_H, MIN_W } from '../constants';
 
 export type WinKind = 'folder' | 'game' | 'info';
 
@@ -25,6 +25,8 @@ export interface WinState {
   /** Smallest this window may be resized to. */
   minW: number;
   minH: number;
+  /** Content aspect ratio (width/height) to lock while resizing (game windows). */
+  aspect?: number;
   z: number;
   minimized: boolean;
   maximized: boolean;
@@ -40,6 +42,7 @@ export interface OpenOpts {
   h: number;
   minW?: number;
   minH?: number;
+  aspect?: number;
   x?: number;
   y?: number;
 }
@@ -107,6 +110,7 @@ export function useWindowManager(): WindowManager {
         h: opts.h,
         minW: opts.minW ?? MIN_W,
         minH: opts.minH ?? MIN_H,
+        aspect: opts.aspect,
         z,
         minimized: false,
         maximized: false,
@@ -181,18 +185,36 @@ export function useWindowManager(): WindowManager {
     setDragging(true);
     document.body.style.cursor = `${edge}-resize`;
 
+    const { aspect } = win;
     const onMove = (ev: PointerEvent) => {
       const dx = (ev.clientX - start.mx) / scale;
       const dy = (ev.clientY - start.my) / scale;
-      let { x, y, w, h } = start;
+      let w = start.w;
+      let h = start.h;
       if (edge.includes('e')) w = start.w + dx;
+      if (edge.includes('w')) w = start.w - dx;
       if (edge.includes('s')) h = start.h + dy;
-      if (edge.includes('w')) { w = start.w - dx; x = start.x + dx; }
-      if (edge.includes('n')) { h = start.h - dy; y = start.y + dy; }
-      // Clamp to the minimum size, anchoring the opposite edge so a west/north
-      // drag stops growing the window once it hits the minimum.
-      if (w < minW) { if (edge.includes('w')) x = start.x + (start.w - minW); w = minW; }
-      if (h < minH) { if (edge.includes('n')) y = start.y + (start.h - minH); h = minH; }
+      if (edge.includes('n')) h = start.h - dy;
+
+      if (aspect) {
+        // Lock the CONTENT box to the game's aspect ratio (no letterboxing): a
+        // horizontal drag drives width, a vertical-only drag drives height; the
+        // other dimension follows. Keep both >= the minimum while staying locked.
+        if (edge.includes('e') || edge.includes('w')) h = CHROME_H + (w - CHROME_W) / aspect;
+        else w = CHROME_W + (h - CHROME_H) * aspect;
+        if (w < minW) { w = minW; h = CHROME_H + (minW - CHROME_W) / aspect; }
+        if (h < minH) { h = minH; w = CHROME_W + (minH - CHROME_H) * aspect; }
+      } else {
+        if (w < minW) w = minW;
+        if (h < minH) h = minH;
+      }
+
+      // Anchor the opposite edge so west/north drags grow toward the cursor.
+      let x = start.x;
+      let y = start.y;
+      if (edge.includes('w')) x = start.x + (start.w - w);
+      if (edge.includes('n')) y = start.y + (start.h - h);
+
       update(id, { x: Math.max(0, x), y: Math.max(0, y), w, h });
     };
     const onUp = () => {

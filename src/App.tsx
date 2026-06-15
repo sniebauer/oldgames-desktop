@@ -44,6 +44,9 @@ function Shell() {
       icon: game.icon,
       w: game.width + CHROME_W,
       h: game.height + CHROME_H,
+      // Lock the content box to the game's aspect ratio so resizing never
+      // letterboxes (no black bars top/bottom).
+      aspect: game.width / game.height,
       // Keep the game from being resized below ~45% of native.
       minW: Math.round(game.width * 0.45) + CHROME_W,
       minH: Math.round(game.height * 0.45) + CHROME_H,
