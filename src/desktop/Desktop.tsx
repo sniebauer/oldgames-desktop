@@ -2,7 +2,7 @@
 // icon opens its window. Open windows render as siblings on top of this.
 
 import { useState, type CSSProperties, type ReactNode } from 'react';
-import { FolderIcon, RecycleBinIcon, TextFileIcon } from '../icons';
+import { FolderIcon, TextFileIcon } from '../icons';
 import { useIsMobile } from '../useIsMobile';
 
 interface Props {
@@ -48,7 +48,14 @@ export function Desktop({ onOpenFolder, onOpenInfo, onOpenAbandonware }: Props) 
           onSelect={() => setSelected('abandonware')}
           onOpen={onOpenAbandonware}
         >
-          <RecycleBinIcon size={40} />
+          <img
+            src="/icons/abandonware.png"
+            alt=""
+            width={40}
+            height={40}
+            draggable={false}
+            style={{ imageRendering: 'pixelated' }}
+          />
         </DesktopIcon>
       </div>
     </div>
