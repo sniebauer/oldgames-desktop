@@ -142,6 +142,7 @@ function FolderItem({ game, selected, onSelect, onOpen, onContext }: ItemProps) 
         flexDirection: 'column',
         alignItems: 'center',
         textAlign: 'center',
+        cursor: 'default',
       }}
     >
       <img

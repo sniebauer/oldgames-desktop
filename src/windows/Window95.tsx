@@ -57,6 +57,7 @@ const capBtnStyle: CSSProperties = {
   border: 0,
   boxShadow:
     'inset -1px -1px 0 #0a0a0a, inset 1px 1px 0 #fefefe, inset -2px -2px 0 #808080, inset 2px 2px 0 #c6c6c6',
+  cursor: 'default',
 };
 
 function CaptionButton({

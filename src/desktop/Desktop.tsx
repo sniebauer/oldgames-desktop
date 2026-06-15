@@ -66,6 +66,7 @@ function DesktopIcon({ label, selected, onSelect, onOpen, children }: IconProps)
         flexDirection: 'column',
         alignItems: 'center',
         textAlign: 'center',
+        cursor: 'default',
       }}
     >
       {children}
