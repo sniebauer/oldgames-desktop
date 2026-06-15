@@ -5,7 +5,7 @@
 import { useCallback, useEffect } from 'react';
 import { Routes, Route, useNavigate, useParams, useLocation } from 'react-router-dom';
 import { gameById, type Game } from './games';
-import { CHROME_H, CHROME_W } from './constants';
+import { CHROME_H, CHROME_W, UI_SCALE } from './constants';
 import { useWindowManager } from './windows/WindowManager';
 import { GameWindow } from './windows/GameWindow';
 import { FolderWindow } from './desktop/FolderWindow';
@@ -77,7 +77,7 @@ function Shell() {
   }, [focus]);
 
   return (
-    <div style={{ position: 'fixed', inset: 0, overflow: 'hidden' }}>
+    <div style={{ position: 'fixed', inset: 0, overflow: 'hidden', zoom: UI_SCALE }}>
       <Desktop onOpenFolder={openFolder} />
       {windows.map((w) =>
         w.kind === 'folder' ? (

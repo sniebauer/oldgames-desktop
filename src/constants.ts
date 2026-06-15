@@ -1,3 +1,9 @@
+// Global UI zoom for the whole desktop. Bumps the apparent "screen resolution"
+// so windows, chrome and fonts read larger, while keeping every Win95 metric
+// pixel-correct (we just scale the final raster). Drag/resize handlers measure
+// the effective zoom from the DOM, so pointer math stays accurate.
+export const UI_SCALE = 1.25;
+
 export const TASKBAR_H = 36;
 
 // --- Win95 window chrome geometry ---------------------------------------

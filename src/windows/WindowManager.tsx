@@ -59,6 +59,15 @@ export interface WindowManager {
   startResize: (id: string, edge: ResizeEdge, e: ReactPointerEvent) => void;
 }
 
+// Effective CSS `zoom` applied to an element: the ratio of its rendered
+// (client-space) width to its layout width. Used to convert pointer-event
+// deltas — which live in zoomed client space — back into layout pixels.
+function pointerScale(el: HTMLElement): number {
+  const layoutW = el.offsetWidth;
+  if (!layoutW) return 1;
+  return el.getBoundingClientRect().width / layoutW || 1;
+}
+
 export function useWindowManager(): WindowManager {
   const [windows, setWindows] = useState<WinState[]>([]);
   const [dragging, setDragging] = useState(false);
@@ -139,11 +148,18 @@ export function useWindowManager(): WindowManager {
     const win = ref.current.find((w) => w.id === id);
     if (!win || win.maximized) return;
     focus(id);
-    const offX = e.clientX - win.x;
-    const offY = e.clientY - win.y;
+    // Pointer coords are in zoomed "client" space; convert deltas back to layout
+    // px by the element's measured zoom so dragging tracks the cursor 1:1.
+    const scale = pointerScale(e.currentTarget as HTMLElement);
+    const startCX = e.clientX;
+    const startCY = e.clientY;
+    const startX = win.x;
+    const startY = win.y;
     setDragging(true);
     const onMove = (ev: PointerEvent) => {
-      update(id, { x: Math.max(0, ev.clientX - offX), y: Math.max(0, ev.clientY - offY) });
+      const x = startX + (ev.clientX - startCX) / scale;
+      const y = startY + (ev.clientY - startCY) / scale;
+      update(id, { x: Math.max(0, x), y: Math.max(0, y) });
     };
     const onUp = () => {
       setDragging(false);
@@ -159,14 +175,15 @@ export function useWindowManager(): WindowManager {
     if (!win || win.maximized) return;
     e.stopPropagation();
     focus(id);
+    const scale = pointerScale(e.currentTarget as HTMLElement);
     const start = { x: win.x, y: win.y, w: win.w, h: win.h, mx: e.clientX, my: e.clientY };
     const { minW, minH } = win;
     setDragging(true);
     document.body.style.cursor = `${edge}-resize`;
 
     const onMove = (ev: PointerEvent) => {
-      const dx = ev.clientX - start.mx;
-      const dy = ev.clientY - start.my;
+      const dx = (ev.clientX - start.mx) / scale;
+      const dy = (ev.clientY - start.my) / scale;
       let { x, y, w, h } = start;
       if (edge.includes('e')) w = start.w + dx;
       if (edge.includes('s')) h = start.h + dy;
