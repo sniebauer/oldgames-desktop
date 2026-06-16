@@ -28,7 +28,7 @@ export const GAMES: Game[] = [
     id: 'sink-sub',
     title: 'SinkSub',
     icon: '/icons/sink-sub.png',
-    src: DEV ? 'http://localhost:5180/' : 'https://sink-sub-web.pages.dev/',
+    src: DEV ? 'http://localhost:5180/' : 'https://sink-sub-web.sniebauer.workers.dev/',
     repoUrl: 'https://github.com/sniebauer/sink-sub-web',
     width: 640,
     height: 476,
